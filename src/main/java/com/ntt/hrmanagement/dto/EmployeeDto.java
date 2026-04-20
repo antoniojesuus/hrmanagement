@@ -5,7 +5,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class EmployeeDto {
+public class EmployeeDTO {
 
     private Long id;
     private String name;
@@ -13,10 +13,10 @@ public class EmployeeDto {
     private Double salary;
     private String departmentName;
 
-    public EmployeeDto() {
+    public EmployeeDTO() {
     }
 
-    public EmployeeDto(Long id, String name, String position, Double salary, String departmentName) {
+    public EmployeeDTO(Long id, String name, String position, Double salary, String departmentName) {
         this.id = id;
         this.name = name;
         this.position = position;

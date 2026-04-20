@@ -1,6 +1,8 @@
 package com.ntt.hrmanagement.service;
 
-import com.ntt.hrmanagement.dto.EmployeeDto;
+import com.ntt.hrmanagement.dto.CreateEmployeeRequest;
+import com.ntt.hrmanagement.dto.EmployeeDTO;
+import com.ntt.hrmanagement.dto.UpdateEmployeeRequest;
 import com.ntt.hrmanagement.exception.ResourceNotFoundException;
 import com.ntt.hrmanagement.model.Department;
 import com.ntt.hrmanagement.model.Employee;
@@ -21,51 +23,56 @@ public class EmployeeService {
         this.departmentRepository = departmentRepository;
     }
 
-    public List<EmployeeDto> getAll() {
+    public List<EmployeeDTO> getAll() {
         return repository.findAll()
                 .stream()
                 .map(this::mapToDto)
                 .toList();
     }
 
-    public EmployeeDto getById(Long id) {
+    public EmployeeDTO getById(Long id) {
         Employee employee = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Empleado no encontrado con id: " + id));
 
         return mapToDto(employee);
     }
 
-    public Employee save(Employee employee) {
-        if (employee.getDepartment() != null && employee.getDepartment().getId() != null) {
-            Department department = departmentRepository.findById(employee.getDepartment().getId())
-                    .orElseThrow(() -> new ResourceNotFoundException(
-                            "Departamento no encontrado con id: " + employee.getDepartment().getId()));
+    public EmployeeDTO save(CreateEmployeeRequest request) {
+        Employee employee = new Employee();
+        employee.setName(request.getName());
+        employee.setPosition(request.getPosition());
+        employee.setSalary(request.getSalary());
 
+        if (request.getDepartmentId() != null) {
+            Department department = departmentRepository.findById(request.getDepartmentId())
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Departamento no encontrado con id: " + request.getDepartmentId()));
             employee.setDepartment(department);
         }
 
-        return repository.save(employee);
+        Employee savedEmployee = repository.save(employee);
+        return mapToDto(savedEmployee);
     }
 
-    public Employee update(Long id, Employee employeeData) {
+    public EmployeeDTO update(Long id, UpdateEmployeeRequest request) {
         Employee employee = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Empleado no encontrado con id: " + id));
 
-        employee.setName(employeeData.getName());
-        employee.setPosition(employeeData.getPosition());
-        employee.setSalary(employeeData.getSalary());
+        employee.setName(request.getName());
+        employee.setPosition(request.getPosition());
+        employee.setSalary(request.getSalary());
 
-        if (employeeData.getDepartment() != null && employeeData.getDepartment().getId() != null) {
-            Department department = departmentRepository.findById(employeeData.getDepartment().getId())
+        if (request.getDepartmentId() != null) {
+            Department department = departmentRepository.findById(request.getDepartmentId())
                     .orElseThrow(() -> new ResourceNotFoundException(
-                            "Departamento no encontrado con id: " + employeeData.getDepartment().getId()));
-
+                            "Departamento no encontrado con id: " + request.getDepartmentId()));
             employee.setDepartment(department);
         } else {
             employee.setDepartment(null);
         }
 
-        return repository.save(employee);
+        Employee updatedEmployee = repository.save(employee);
+        return mapToDto(updatedEmployee);
     }
 
     public void delete(Long id) {
@@ -75,16 +82,21 @@ public class EmployeeService {
         repository.delete(employee);
     }
 
-    public List<Employee> getByDepartmentId(Long departmentId) {
-        return repository.findByDepartmentId(departmentId);
+    public List<EmployeeDTO> getByDepartmentId(Long departmentId) {
+        return repository.findByDepartmentId(departmentId)
+                .stream()
+                .map(this::mapToDto)
+                .toList();
     }
 
-    private EmployeeDto mapToDto(Employee employee) {
-        String departmentName = employee.getDepartment() != null
-                ? employee.getDepartment().getName()
-                : null;
+    private EmployeeDTO mapToDto(Employee employee) {
+        String departmentName = null;
 
-        return new EmployeeDto(
+        if (employee.getDepartment() != null) {
+            departmentName = employee.getDepartment().getName();
+        }
+
+        return new EmployeeDTO(
                 employee.getId(),
                 employee.getName(),
                 employee.getPosition(),

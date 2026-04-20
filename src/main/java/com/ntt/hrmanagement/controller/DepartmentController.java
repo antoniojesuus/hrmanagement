@@ -1,7 +1,7 @@
 package com.ntt.hrmanagement.controller;
 
+import com.ntt.hrmanagement.dto.EmployeeDTO;
 import com.ntt.hrmanagement.model.Department;
-import com.ntt.hrmanagement.model.Employee;
 import com.ntt.hrmanagement.service.DepartmentService;
 import com.ntt.hrmanagement.service.EmployeeService;
 import jakarta.validation.Valid;
@@ -47,7 +47,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/{id}/employees")
-    public List<Employee> getEmployeesByDepartment(@PathVariable Long id) {
+    public List<EmployeeDTO> getEmployeesByDepartment(@PathVariable Long id) {
         return employeeService.getByDepartmentId(id);
     }
 }
