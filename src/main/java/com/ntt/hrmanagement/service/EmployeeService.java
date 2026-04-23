@@ -6,6 +6,7 @@ import com.ntt.hrmanagement.dto.UpdateEmployeeRequest;
 import com.ntt.hrmanagement.exception.ResourceNotFoundException;
 import com.ntt.hrmanagement.model.Department;
 import com.ntt.hrmanagement.model.Employee;
+import com.ntt.hrmanagement.model.EmployeeStatus;
 import com.ntt.hrmanagement.repository.DepartmentRepository;
 import com.ntt.hrmanagement.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,7 @@ public class EmployeeService {
         employee.setName(request.getName());
         employee.setPosition(request.getPosition());
         employee.setSalary(request.getSalary());
+        employee.setStatus(EmployeeStatus.ACTIVE);
 
         if (request.getDepartmentId() != null) {
             Department department = departmentRepository.findById(request.getDepartmentId())
@@ -75,6 +77,15 @@ public class EmployeeService {
         return mapToDto(updatedEmployee);
     }
 
+    public EmployeeDTO updateStatus(Long id, EmployeeStatus status) {
+        Employee employee = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Empleado no encontrado con id: " + id));
+
+        employee.setStatus(status);
+
+        return mapToDto(repository.save(employee));
+    }
+
     public void delete(Long id) {
         Employee employee = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Empleado no encontrado con id: " + id));
@@ -101,7 +112,9 @@ public class EmployeeService {
                 employee.getName(),
                 employee.getPosition(),
                 employee.getSalary(),
+                employee.getStatus(),
                 departmentName
         );
     }
+
 }

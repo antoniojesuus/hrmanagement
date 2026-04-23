@@ -26,6 +26,9 @@ public class Employee {
     @Min(value = 0, message = "El salario no puede ser negativo")
     private Double salary;
 
+    @Enumerated(EnumType.STRING)
+    private EmployeeStatus status;
+
     @ManyToOne
     @JoinColumn(name = "department_id")
     private Department department;
