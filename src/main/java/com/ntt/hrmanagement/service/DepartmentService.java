@@ -1,8 +1,11 @@
 package com.ntt.hrmanagement.service;
 
+import com.ntt.hrmanagement.dto.DepartmentDTO;
 import com.ntt.hrmanagement.exception.ResourceNotFoundException;
 import com.ntt.hrmanagement.model.Department;
+import com.ntt.hrmanagement.model.Employee;
 import com.ntt.hrmanagement.repository.DepartmentRepository;
+import com.ntt.hrmanagement.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,18 +14,25 @@ import java.util.List;
 public class DepartmentService {
 
     private final DepartmentRepository repository;
+    private final EmployeeRepository employeeRepository;
 
-    public DepartmentService(DepartmentRepository repository) {
+    public DepartmentService(DepartmentRepository repository, EmployeeRepository employeeRepository) {
         this.repository = repository;
+        this.employeeRepository = employeeRepository;
     }
 
-    public List<Department> getAll() {
-        return repository.findAll();
+    public List<DepartmentDTO> getAll() {
+        return repository.findAll()
+                .stream()
+                .map(this::mapToDto)
+                .toList();
     }
 
-    public Department getById(Long id) {
-        return repository.findById(id)
+    public DepartmentDTO getById(Long id) {
+        Department department = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Departamento no encontrado con id: " + id));
+
+        return mapToDto(department);
     }
 
     public Department save(Department department) {
@@ -43,5 +53,35 @@ public class DepartmentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Departamento no encontrado con id: " + id));
 
         repository.delete(department);
+    }
+
+    public DepartmentDTO assignManager(Long departmentId, Long managerId) {
+        Department department = repository.findById(departmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Departamento no encontrado con id: " + departmentId));
+
+        Employee manager = employeeRepository.findById(managerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Empleado no encontrado con id: " + managerId));
+
+        department.setManager(manager);
+
+        Department updatedDepartment = repository.save(department);
+        return mapToDto(updatedDepartment);
+    }
+
+    private DepartmentDTO mapToDto(Department department) {
+        Long managerId = null;
+        String managerName = null;
+
+        if (department.getManager() != null) {
+            managerId = department.getManager().getId();
+            managerName = department.getManager().getName();
+        }
+
+        return new DepartmentDTO(
+                department.getId(),
+                department.getName(),
+                managerId,
+                managerName
+        );
     }
 }

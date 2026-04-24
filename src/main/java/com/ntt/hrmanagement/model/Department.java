@@ -24,4 +24,8 @@ public class Department {
     @JsonIgnore
     private List<Employee> employees;
 
+    @ManyToOne
+    @JoinColumn(name = "manager_id")
+    private Employee manager;
+
 }

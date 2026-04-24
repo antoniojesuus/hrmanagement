@@ -1,5 +1,6 @@
 package com.ntt.hrmanagement.controller;
 
+import com.ntt.hrmanagement.dto.DepartmentDTO;
 import com.ntt.hrmanagement.dto.EmployeeDTO;
 import com.ntt.hrmanagement.model.Department;
 import com.ntt.hrmanagement.service.DepartmentService;
@@ -22,12 +23,12 @@ public class DepartmentController {
     }
 
     @GetMapping
-    public List<Department> getAll() {
+    public List<DepartmentDTO> getAll() {
         return service.getAll();
     }
 
     @GetMapping("/{id}")
-    public Department getById(@PathVariable Long id) {
+    public DepartmentDTO getById(@PathVariable Long id) {
         return service.getById(id);
     }
 
@@ -49,5 +50,11 @@ public class DepartmentController {
     @GetMapping("/{id}/employees")
     public List<EmployeeDTO> getEmployeesByDepartment(@PathVariable Long id) {
         return employeeService.getByDepartmentId(id);
+    }
+
+    @PutMapping("/{id}/manager")
+    public DepartmentDTO assignManager(@PathVariable("id") Long id,
+                                       @RequestParam("managerId") Long managerId) {
+        return service.assignManager(id, managerId);
     }
 }
