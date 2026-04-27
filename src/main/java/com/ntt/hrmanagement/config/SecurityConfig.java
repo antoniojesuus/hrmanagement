@@ -31,6 +31,7 @@ public class SecurityConfig {
                         .requestMatchers("/leave-requests/**").hasAnyRole("ADMIN", "HR", "EMPLOYEE")
                         .requestMatchers("/employees/**").hasAnyRole("ADMIN", "HR")
                         .requestMatchers("/payrolls/**").hasAnyRole("ADMIN", "HR")
+                        .requestMatchers("/department-projects/**").hasAnyRole("ADMIN", "HR")
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults());
