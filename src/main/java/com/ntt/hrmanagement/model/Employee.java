@@ -29,6 +29,10 @@ public class Employee {
     @Enumerated(EnumType.STRING)
     private EmployeeStatus status;
 
+    private Integer totalVacationDays;
+
+    private Integer availableVacationDays;
+
     @ManyToOne
     @JoinColumn(name = "department_id")
     private Department department;

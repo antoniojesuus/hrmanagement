@@ -52,6 +52,14 @@ public class EmployeeService {
             employee.setDepartment(department);
         }
 
+        if (employee.getTotalVacationDays() == null) {
+            employee.setTotalVacationDays(22);
+        }
+
+        if (employee.getAvailableVacationDays() == null) {
+            employee.setAvailableVacationDays(employee.getTotalVacationDays());
+        }
+
         Employee savedEmployee = repository.save(employee);
         return mapToDto(savedEmployee);
     }
@@ -98,6 +106,13 @@ public class EmployeeService {
                 .stream()
                 .map(this::mapToDto)
                 .toList();
+    }
+
+    public Integer getAvailableVacationDays(Long id){
+        Employee employee = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Empleado no encontrado con id: " + id));
+
+        return employee.getAvailableVacationDays();
     }
 
     private EmployeeDTO mapToDto(Employee employee) {

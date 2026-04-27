@@ -10,6 +10,7 @@ import com.ntt.hrmanagement.repository.EmployeeRepository;
 import com.ntt.hrmanagement.repository.LeaveRequestRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -53,6 +54,16 @@ public class LeaveRequestService {
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Empleado no encontrado con id: " + request.getEmployeeId()));
 
+        long requestedDays = ChronoUnit.DAYS.between(request.getStartDate(), request.getEndDate()) + 1;
+
+        if (employee.getAvailableVacationDays() == null) {
+            employee.setAvailableVacationDays(0);
+        }
+
+        if (requestedDays > employee.getAvailableVacationDays()) {
+            throw new IllegalArgumentException("El empleado no tiene suficientes días de vacaciones disponibles");
+        }
+
         LeaveRequest leaveRequest = new LeaveRequest();
         leaveRequest.setStartDate(request.getStartDate());
         leaveRequest.setEndDate(request.getEndDate());
@@ -71,6 +82,23 @@ public class LeaveRequestService {
         if (leaveRequest.getStatus() != LeaveStatus.PENDING) {
             throw new IllegalArgumentException("Solo se pueden aprobar solicitudes en estado PENDING");
         }
+
+        long requestedDays = ChronoUnit.DAYS.between(
+                leaveRequest.getStartDate(),
+                leaveRequest.getEndDate()
+        ) + 1;
+
+        Employee employee = leaveRequest.getEmployee();
+
+        if (employee.getAvailableVacationDays() == null) {
+            employee.setAvailableVacationDays(0);
+        }
+
+        if (requestedDays > employee.getAvailableVacationDays()) {
+            throw new IllegalArgumentException("El empleado no tiene suficientes días de vacaciones disponibles");
+        }
+
+        employee.setAvailableVacationDays((int) (employee.getAvailableVacationDays() - requestedDays));
 
         leaveRequest.setStatus(LeaveStatus.APPROVED);
         return mapToDto(repository.save(leaveRequest));

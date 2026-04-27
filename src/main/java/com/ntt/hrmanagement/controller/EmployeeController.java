@@ -30,6 +30,11 @@ public class EmployeeController {
         return service.getById(id);
     }
 
+    @GetMapping("/{id}/vacation-balance")
+    public Integer getVacationBalance(@PathVariable("id") Long id) {
+        return service.getAvailableVacationDays(id);
+    }
+
     @PostMapping
     public EmployeeDTO create(@Valid @RequestBody CreateEmployeeRequest request) {
         return service.save(request);
