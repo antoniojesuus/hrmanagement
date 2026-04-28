@@ -32,6 +32,8 @@ public class SecurityConfig {
                         .requestMatchers("/employees/**").hasAnyRole("ADMIN", "HR")
                         .requestMatchers("/payrolls/**").hasAnyRole("ADMIN", "HR")
                         .requestMatchers("/department-projects/**").hasAnyRole("ADMIN", "HR")
+                        .requestMatchers("/employees-view").hasAnyRole("ADMIN", "HR")
+                        .requestMatchers("/departments-view").hasAnyRole("ADMIN", "HR")
                         .anyRequest().authenticated()
                 )
                 .httpBasic(Customizer.withDefaults());

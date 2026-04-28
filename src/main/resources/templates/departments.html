@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Departments</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+<h1>Departments</h1>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Manager ID</th>
+        <th>Manager Name</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="department : ${departments}">
+        <td th:text="${department.id}"></td>
+        <td th:text="${department.name}"></td>
+        <td th:text="${department.managerId}"></td>
+        <td th:text="${department.managerName}"></td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
